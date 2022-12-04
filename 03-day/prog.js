@@ -17,6 +17,14 @@ function createSet(str) {
 	return new Set([...str]);
 }
 
+function getSum(set) {
+	let sum = 0;
+	for (let char of set) {
+		sum += getValue(char);
+	}
+	return sum;
+}
+
 fs.readFile(fileName, (err, data) => {
 	if (err) {
 		console.error(err);
@@ -25,28 +33,18 @@ fs.readFile(fileName, (err, data) => {
 	let sum1 = 0;
 	let sum2 = 0;
 	let i = 0;
-	let e1 = '';
-	let e2 = '';
-	let e3 = '';
+	const arr = Array(3).fill('');
 	for (let line of data.toString().split('\n')) {
 		const firstHalf = createSet(line.slice(0, line.length / 2));
 		const secondHalf = createSet(line.slice(line.length / 2));
 		const common1 = getIntersection(firstHalf, secondHalf);
-		for (let char of common1) {
-			sum1 += getValue(char);
+		sum1 += getSum(common1);
+
+		arr[i % 3] = line;
+		if (i++ % 3 == 2) {
+			const common2 = getIntersection(createSet(arr[0]), getIntersection(createSet(arr[1]), createSet(arr[2])));
+			sum2 += getSum(common2)
 		}
-		if (i % 3 == 0) {
-			e1 = line;
-		} else if (i % 3 == 1) {
-			e2 = line;
-		} else {
-			e3 = line;
-			const common2 = getIntersection(createSet(e1), getIntersection(createSet(e2), createSet(e3)));
-			for (let char of common2) {
-				sum2 += getValue(char);
-			}
-		}
-		i++;
 	}
 	console.log(sum1);
 	console.log(sum2);
